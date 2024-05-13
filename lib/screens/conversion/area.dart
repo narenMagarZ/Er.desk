@@ -1,71 +1,58 @@
 import "package:er_desk/widgets/screen-appbar.dart";
 import "package:flutter/material.dart";
+import "package:provider/provider.dart";
+import "../../utils/conversion-provider.dart";
+import "../../widgets/drop-down-button.dart";
+import "../../widgets/input-box.dart";
 
 class AreaConversion extends StatelessWidget {
   const AreaConversion({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List areaTypes = [
-      {"name":"Bigha", "value":0},
-      {"name":"Kattha", "value":0},
-      {"name":"Dhur", "value":0},
-      {"name":"Ropani", "value":0},
-      {"name":"Aana", "value":0},
-      {"name":"Paisa","value":0},
-      {"name":"Daam","value":0},
-      {"name":"Sq.m","value":0},
-      {"name":"Sq.feet","value":0},
-      {"name":"Khetmuri","value":0},
-      {"name":"Matomuri","value":0}
-    ];
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Poppins'
-      ),
-      home: Scaffold(
-        appBar: appBar(context, "Area Conversion"),
-        body: Container(
-          padding: const EdgeInsets.all(4),
-          child: Column(
-            children: [
-              Expanded(
-                  flex: 0,
-                  child: Row(
-                children: [
-                  Container(
-                    width: 200,
-                    child: InputBox(),
-                  ),
-                  Container(
-                    width: 150,
-                    child: DropDownButton(),
-                  )
-                ],
-              )),
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(4),
-                      itemCount: areaTypes.length,
-                      itemBuilder: (context,index){
-                        return Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.only(left: 0,right: 0,top: 10,bottom: 10),
-                                width:200,
-                                child: Text(areaTypes[index]["value"].toString())),
-                            Container(
-                                width:150,
-                                padding: const EdgeInsets.only(left: 0,right: 0,top: 10,bottom: 10),
-                                child: Text(areaTypes[index]["name"],style: TextStyle(
-                                  fontSize: 16
-                                ),))],
-                        );
-                      }
-                  ),
-                ) ,
-            ],
+    final areaUnits = ["bigha","kattha","dhur","ropani","aana","paisa","daam","sq.meter","sq.feet","khetmuri","matomuri","acre","hectare"];
+    return ChangeNotifierProvider(
+      create: (context)=>ConversionProvider(areaUnits[0]),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          fontFamily: 'Poppins'
+        ),
+        home: Scaffold(
+          appBar: appBar(context, "Area Conversion"),
+          body: Container(
+            padding: const EdgeInsets.all(4),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    const Expanded(child: InputBox()),
+                    const SizedBox(width: 10),
+                    Expanded(child: DropDownButton(areaUnits))
+                  ],
+                ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(4),
+                        itemCount: areaUnits.length,
+                        itemBuilder: (context,index){
+                          return Consumer<ConversionProvider>(builder: (context,provider,_)=>
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(child:Text("${convertArea(provider.value, provider.unit,areaUnits[index] )}")),
+                                Expanded(child: Text(areaUnits[index]))
+                              ],
+                            ),
+                          ));
+                        }
+                    ),
+                  ) ,
+              ],
+            ),
           ),
         ),
       ),
@@ -73,77 +60,75 @@ class AreaConversion extends StatelessWidget {
   }
 }
 
-class InputBox extends StatefulWidget {
-  const InputBox({super.key});
-
-  @override
-  State<InputBox> createState() => _InputBoxState();
-}
-
-class _InputBoxState extends State<InputBox> {
-  final TextEditingController _controller = TextEditingController(text: "1");
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: _controller,
-      onChanged: (value){
-        print(value);
-      },
-      keyboardType: TextInputType.number,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder()
-
-      ),
-    );
+double convertArea(double value, String sourceUnit, String targetUnit) {
+  const squareMeterToSquareFeet = 10.764;
+  double convertToSquareMeter(double inputValue, String unit) {
+    switch (unit) {
+      case "bigha":
+        return inputValue * 6772.41;
+      case "kattha":
+        return inputValue * 338.62 ;
+      case "dhur":
+        return inputValue * 16.93;
+      case "ropani":
+        return inputValue * 508.74;
+      case "aana":
+        return inputValue * 31.80;
+      case "paisa":
+        return inputValue * 7.95;
+      case "daam":
+        return inputValue * 1.99 ;
+      case "sq.meter":
+        return inputValue;
+      case "sq.feet":
+        return inputValue / squareMeterToSquareFeet;
+      case "khetmuri":
+        return inputValue * 12718.5 ;
+      case "matomuri":
+        return inputValue * 127.185;
+      case "acre":
+        return inputValue * 4046.86;
+      case "hectare":
+        return inputValue * 10000;
+      default:
+        throw Exception("Unsupported unit: $targetUnit");
+    }
   }
-}
 
-class DropDownButton extends StatefulWidget {
-  const DropDownButton({super.key});
-
-  @override
-  State<DropDownButton> createState() => _DropDownButtonState();
-}
-
-class _DropDownButtonState extends State<DropDownButton> {
-  String selectedValue = "Bigha";
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton(
-      value: selectedValue,
-      items: ["Bigha","Kattha","Dhur","Ropani"].map<DropdownMenuItem<String>>((String value) =>
-      DropdownMenuItem(
-          value: value,
-          child: Text(value))
-      ).toList(),
-      onChanged: (newValue){
-        setState(() {
-          selectedValue = newValue!;
-        });
-      },
-    );
+  double convertFromSquareMeter(double inputValue, String unit) {
+    switch (unit) {
+      case "bigha":
+        return inputValue / 6772.41 ;
+      case "kattha":
+        return inputValue / 338.62;
+      case "dhur":
+        return inputValue / 16.93;
+      case "ropani":
+        return inputValue / 508.74;
+      case "aana":
+        return inputValue / 31.80;
+      case "paisa":
+        return inputValue / 7.95;
+      case "daam":
+        return inputValue / 1.99;
+      case "sq.meter":
+        return inputValue ;
+      case "sq.feet":
+        return inputValue * squareMeterToSquareFeet;
+      case "khetmuri":
+        return inputValue / 12718.5 ;
+      case "matomuri":
+        return inputValue /  127.185;
+      case "acre":
+        return inputValue / 4046.86;
+      case "hectare":
+        return inputValue / 10000;
+      default:
+        throw Exception("Unsupported unit: $targetUnit");
+    }
   }
+
+  double valueInSquareMeter = convertToSquareMeter(value, sourceUnit);
+  return convertFromSquareMeter(valueInSquareMeter, targetUnit);
 }
 
-class Area extends StatefulWidget {
-  final String areaValue ;
-  final String areaType;
-  const Area(this.areaType,this.areaValue,{super.key});
-  @override
-  State<Area> createState() => _AreaState();
-}
-
-class _AreaState extends State<Area> {
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: 0,
-      child: Row(
-        children: [
-          Text(widget.areaValue),
-          Text(widget.areaType)
-        ],
-      ),
-    );
-  }
-}

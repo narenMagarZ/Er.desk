@@ -1,3 +1,4 @@
+import "package:er_desk/utils/get-resource-download-url.dart";
 import "package:flutter/material.dart";
 import "package:firebase_storage/firebase_storage.dart";
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -18,7 +19,7 @@ class _PDFViewerState extends State<PDFViewer> {
   @override
   void initState(){
     super.initState();
-    pdfUrl = fetchData("${widget.dir}/${widget.fileName}.pdf");
+    pdfUrl = getResourceDownloadUrl("${widget.dir}/${widget.fileName}.pdf");
   }
   @override
   Widget build(BuildContext context) {
@@ -56,18 +57,3 @@ class _PDFViewerState extends State<PDFViewer> {
   }
 }
 
-Future<String> fetchData(String location)async{
-  try{
-    // pointer to a file in a cloud
-    final storageRef = FirebaseStorage.instance
-        .ref()
-        .child(location);
-    final url = await storageRef.getDownloadURL();
-    return url;
-  }
-  catch(e){
-    // rethrow;
-    return "what";
-  }
-
-}

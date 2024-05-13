@@ -1,4 +1,5 @@
 import 'package:er_desk/firebase_options.dart';
+import 'package:er_desk/screens/splash-screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'screens/home.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Poppins'
       ),
-      home: const Home(),
+      home: const SplashScreen(),
     );
   }
 }

@@ -1,3 +1,4 @@
+import "package:er_desk/screens/3d-model-viewer.dart";
 import "package:er_desk/utils/fetch-items-in-directory.dart";
 import "package:flutter/material.dart";
 import "package:er_desk/screens/pdf-viewer.dart";
@@ -32,9 +33,18 @@ FutureBuilder featureListBuilder(String dir){
               ),
               child: ListTile(
                 onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> PDFViewer(dir,data[index])));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)
+                  {
+                    if (dir == "3d-model") {
+                      return ThreeDModelViewer(dir,data[index]); // replace container with 3d model viewer
+                    }
+                    else {
+                      return PDFViewer(dir, data[index]);
+                    }
+                  }
+                  ));
                 },
-                leading: const Icon(Icons.picture_as_pdf,color:Color(0xAA7B5FEB)),
+                leading: dir!="3d-model"? const Icon(Icons.picture_as_pdf,color:Color(0xAA7B5FEB)):const Icon(Icons.model_training),
                 title: Text(data![index],
                   style: const TextStyle(
                     // overflow: TextOverflow.ellipsis,

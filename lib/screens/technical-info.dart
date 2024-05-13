@@ -14,6 +14,9 @@ class _TechnicalInfoState extends State<TechnicalInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context, "Technical Information"),
+      body: const Center(
+        child: Text("Coming soon..."),
+      ),
     );
   }
 }

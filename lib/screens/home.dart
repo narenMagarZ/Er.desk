@@ -1,5 +1,8 @@
 import "package:er_desk/screens/about-us.dart";
+import "package:er_desk/screens/login.dart";
+import "package:er_desk/screens/profile.dart";
 import "package:er_desk/screens/rate-us.dart";
+import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import "package:er_desk/widgets/hero-card.dart";
 import 'package:er_desk/widgets/feature-card.dart';
@@ -43,7 +46,15 @@ class Home extends StatelessWidget {
             fontWeight: FontWeight.bold,
             fontSize: 18
           )),
-        )
+        ),
+        actions: [
+          IconButton(
+            onPressed: ()async{
+              User? user = FirebaseAuth.instance.currentUser;
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>user==null?const Login():const Profile()));
+            },
+            icon: const Icon(Icons.person_2_rounded))
+        ],
       ),
       drawer: Drawer(
         child: Container(

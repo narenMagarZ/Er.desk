@@ -9,6 +9,7 @@ import "package:er_desk/screens/technical-info.dart";
 import "package:er_desk/screens/valuation.dart";
 import "package:er_desk/screens/vastru-sastra.dart";
 import "package:er_desk/screens/nbc-code.dart";
+import "package:er_desk/screens/3d-model.dart";
 class FeatureCard extends StatelessWidget {
   final String title;
   final String svgSrc;
@@ -28,7 +29,7 @@ class FeatureCard extends StatelessWidget {
       "NBC Code":const NBCCode(),
       "Vastru Sastra":const VastruSastra(),
       "Technical Information":const TechnicalInfo(),
-      "3d Model":const ThreeDModelViewer()
+      "3d Model":const ThreeDModel()
     };
     return LayoutBuilder(
       builder: (context, snapshot) {
